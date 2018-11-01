@@ -30,7 +30,6 @@ def random_act(obs,x):
     else:
         return Bird.act(obs)
 
-
 def play_flappy():
 
     TIME_S  = 1     
