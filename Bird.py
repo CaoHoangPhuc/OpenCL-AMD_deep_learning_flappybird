@@ -8,12 +8,12 @@ import numpy as np
 
 Bird = Agent.Agent()
 
-OBSERVE = 1000.
-EXPLORE = 1000000.
+OBSERVE = 1000
+EXPLORE = 100000.
 INIT_EP = 0.5
 FINL_EP = 0.0001
-SAVE_SL = 1
-LOAD_SL = 0
+SAVE_SL = 3
+LOAD_SL = 2
 
 def preprocess(image):
     x_t = cv2.cvtColor(cv2.resize(image, (80, 80)), cv2.COLOR_BGR2GRAY)
@@ -58,12 +58,12 @@ def play_flappy():
                 EPSILON -= (INIT_EP - FINL_EP)/EXPLORE
             
             if (TIME_S % 100 == 0):
-            	print(TIME_S,reward,np.argmax(action),round(EPSILON,5),round(
+                print(TIME_S,reward,np.argmax(action),round(EPSILON,5),round(
                 np.amax(Bird.model.predict(np.array([obs]))[0]),5))
-            
-            if (TIME_S >= OBSERVE):
-            	Bird.replay()
-
+                
+            if (TIME_S >= OBSERVE ):
+                Bird.replay()
+                
             if TIME_S %10000 == 0:
                 Bird._save(SAVE_SL)
 

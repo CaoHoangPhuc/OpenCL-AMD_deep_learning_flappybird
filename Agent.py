@@ -35,6 +35,7 @@ class Agent(object):
 
 	def act(self,obs):
 		act = np.argmax(self.model.predict(np.array([obs])))
+		# print(self.model.predict(np.array([obs])))
 		if act :
 			return [0,1]
 		else:
@@ -50,7 +51,7 @@ class Agent(object):
 
 		for i in range(0,self.batch):
 			if mini_batch[i][4]:
-				temp[i][mini_batch[i][1]] = mini_batch[i][2]
+				temp[i][mini_batch[i][1]] = mini_batch[i][2]*10
 			else:
 				temp[i][mini_batch[i][1]] = mini_batch[i][2] + \
 				self.gamma*np.max(temp1[i])
