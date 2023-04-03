@@ -18,9 +18,9 @@ class DQNAgent:
         self.state_size = state_size
         self.action_size = action_size
         self.memory = []
-        self.gamma = 0.99  # discount rate
-        self.epsilon = 0.1  # exploration rate
-        self.epsilon_min = 0.1
+        self.gamma = 0.98  # discount rate
+        self.epsilon = 1.  # exploration rate
+        self.epsilon_min = 0.001
         self.epsilon_decay = 0.998
         self.learning_rate = 1e-4
         self.model = self._build_model()
@@ -43,9 +43,9 @@ class DQNAgent:
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
-            return np.random.choice(self.action_size), -10
+            return np.random.choice(self.action_size)
         act_values = self.model.predict(np.array([state]))
-        return np.argmax(act_values[0]), np.max(act_values[0])
+        return np.argmax(act_values[0])
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
@@ -61,8 +61,7 @@ class DQNAgent:
         targets[np.arange(batch_size), 0, actions] = rewards + self.gamma * np.max(q_values_next.reshape(batch_size,2), axis = 1) * (1 - dones)
 
         self.model.train_on_batch(states, targets)
-
-
+        
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -89,15 +88,15 @@ if __name__ == "__main__":
         state = np.reshape(state[0], [1, 4])  # Reshape the state to have 4 features
         for time in range(1000):
             # env.render() # uncomment to render the game
-            action, x = agent.act(state)
+            action = agent.act(state)
             next_state, reward, done, _, _ = env.step(action)
             reward = reward if not done else -10
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2}, sc: {}"
-                      .format(e, 500, time, agent.epsilon, x ))
+                print("episode: {}/{}, score: {}, e: {:.2}"
+                      .format(e, 500, time, agent.epsilon))
                 break
                 
             if len(agent.memory) > batch_size:
