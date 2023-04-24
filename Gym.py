@@ -43,9 +43,9 @@ class DQNAgent:
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
-            return np.random.choice(self.action_size), -10
+            return np.random.choice(self.action_size)
         act_values = self.model.predict(np.array([state]))
-        return np.argmax(act_values[0]), np.max(act_values[0])
+        return np.argmax(act_values[0])
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
@@ -61,8 +61,7 @@ class DQNAgent:
         targets[np.arange(batch_size), 0, actions] = rewards + self.gamma * np.max(q_values_next.reshape(batch_size, action_size), axis = 1) * (1 - dones)
 
         self.model.train_on_batch(states, targets)
-
-
+        
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -100,8 +99,8 @@ if __name__ == "__main__":
             state = next_state
             if time == (time_step - 1): done = True
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2}, sc: {}"
-                      .format(e, 500, time, agent.epsilon, x ))
+                print("episode: {}/{}, score: {}, e: {:.2}"
+                      .format(e, 500, time, agent.epsilon))
                 break
                 
             if len(agent.memory) > batch_size:
