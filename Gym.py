@@ -2,6 +2,7 @@ import gym
 import numpy as np
 import random
 import plaidml.keras
+import gym_sokoban
 
 plaidml.keras.install_backend()
 
@@ -77,10 +78,17 @@ def dtlaction(action):
 if __name__ == "__main__":
     # initialize gym environment and the agent
     # enviroment available in here https://www.gymlibrary.dev/environments/classic_control/
-    game_name = 'Pendulum-v1'
-    env = gym.make(game_name, render_mode="human")
-    state_size = env.observation_space.shape[0]
+    game_name = 'Sokoban-v2'
+    env = gym.make(game_name)
+    env.reset()
+    env.render(mode='human')
+    for e in range(500):
+        print("episode:")
+        env.render(mode='human')
+        action = env.action_space.sample()
+        observation, reward, done, info = env.step(action)
     action_size = 5 #env.action_space.n
+    state_size = env.observation_space.shape[0]
     agent = DQNAgent(state_size, action_size)
     # agent.load(game_name + "_dqn.h5")
     # train the agent
