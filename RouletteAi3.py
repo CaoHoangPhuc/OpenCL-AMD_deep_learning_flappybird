@@ -250,7 +250,8 @@ def train_agent(agent, env, num_episodes):
                 "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
                 "0" if action == 6 else str(action // 2 + 1)))
             next_state, reward = env.step(action)
-            agent.save_mem(state, q1, q2,reward,next_state)
+            if rounds > roulette_env.num_states:
+                agent.save_mem(state, q1, q2,reward,next_state)
             if action != 6: total_reward += reward
             print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
             # print(np.round(q1[0],2))

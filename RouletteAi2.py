@@ -81,6 +81,7 @@ def _save(x):
 def save_mem(obs,act,rwd,n_o):
     if len(Mem) > MaxMem: Mem.popleft()
     Mem.append((obs,np.argmax(act),rwd,deepcopy(n_o)))
+    if len(Mem) > batch: replay()
 
 def replay():
     mini_batch = random.sample(Mem, batch)
@@ -207,14 +208,12 @@ for episode in range(num_episodes):
         if action != 6:
             total_reward += reward
         print("Sample Round: {}, predict: {}, outcome:{}, profit: {}".format(rounds, action, next_state[-1], total_reward))
-
-        save_mem(state,q_values,reward,next_state)
+        if rounds > num_outcomes:
+            save_mem(state,q_values,reward,next_state)
 
         state = deepcopy(next_state)
 
         # Update the Q-network based on the Q-learning update rule
-        if len(Mem) > batch:
-            replay()
         target = reward + 0.9*np.max(model.predict(next_state.reshape(1, -1), verbose=0))
         q_values[0, action] = target
         model.fit(state.reshape(1, -1), q_values, epochs=1, verbose=0)
