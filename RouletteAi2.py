@@ -53,7 +53,7 @@ Mem = deque()
 # Define the number of possible outcomes (0-36)
 num_outcomes = 36
 
-MaxMem = 5000
+MaxMem = 500
 batch = 32
 # Create a simple Q-network
 model = keras.Sequential([
@@ -91,7 +91,7 @@ def replay():
     temp1 = model.predict(S1, verbose=0)
 
     for i in range(batch):
-        temp[i][mini_batch[i][1]] = mini_batch[i][2] + 0.9*np.max(temp1[i])
+        temp[i][mini_batch[i][1]] = mini_batch[i][2] + 0.95*np.max(temp1[i])
 
     model.train_on_batch(S,temp)
 
@@ -114,7 +114,9 @@ class RouletteEnvironment:
                 # outcome = int(input("Predict is {}, input is: ".format(action)))
                 # outcome = (self.num + 1 ) %37
                 try:
-                    print("AI predicted: "+ str(action))
+                    print("AI predict: {}, amount: {}".format(
+                        "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
+                        "0" if action == 6 else str(action // 2 + 1)))
                     while not new_data:
                         # Your main thread's tasks here
                         time.sleep(1)  # Sleep for 1 second or perform other tasks
@@ -167,7 +169,7 @@ class RouletteEnvironment:
 # Training loop (for demonstration)
 num_episodes = 100
 
-EXPLORE = 500
+EXPLORE = 5000
 INIT_EP = 0.9999
 FINL_EP = 0.0001
 
@@ -182,8 +184,9 @@ for episode in range(num_episodes):
     rounds = 0
     total_reward = 0
     EPSILON = INIT_EP
-
-    for step in range(500):  # In each episode, make predictions for 10 rounds
+    randomness = False
+    # for step in range(5000):  # In each episode, make predictions for 10 rounds
+    while True:
         rounds += 1
         # print(round, step, total_reward)
         q_values = model.predict(state.reshape(1, -1), verbose=0)
@@ -216,6 +219,8 @@ for episode in range(num_episodes):
         q_values[0, action] = target
         model.fit(state.reshape(1, -1), q_values, epochs=1, verbose=0)
 
+        _save(1)
+
     randomness = False
 
     for i in deepcopy(out):
@@ -242,7 +247,7 @@ for episode in range(num_episodes):
     # randomness = False
     # print("Sample Round: {}, predict: {}, outcome:{}, profit: {}".format(rounds, action, next_state[-1], total_reward))
     # print(f"Episode {episode + 1} - Total Reward: {total_reward}")
-    # _save(1)
+    _save(1)
     # else: print("No save")
 
 # To predict the next outcome given the current state
