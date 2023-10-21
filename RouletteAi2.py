@@ -53,7 +53,7 @@ Mem = deque()
 # Define the number of possible outcomes (0-36)
 num_outcomes = 36
 
-MaxMem = 500
+MaxMem = 5000
 batch = 32
 # Create a simple Q-network
 model = keras.Sequential([
@@ -179,7 +179,7 @@ class RouletteEnvironment:
 # Training loop (for demonstration)
 num_episodes = 100
 
-EXPLORE = 5000
+EXPLORE = 10000
 INIT_EP = 0.9999
 FINL_EP = 0.0001
 
@@ -194,9 +194,9 @@ for episode in range(num_episodes):
     rounds = 0
     total_reward = 0
     EPSILON = INIT_EP
-    randomness = False
-    # for step in range(5000):  # In each episode, make predictions for 10 rounds
-    while True:
+    # randomness = False
+    for step in range(10000):  # In each episode, make predictions for 10 rounds
+    # while True:
         rounds += 1
         # print(round, step, total_reward)
         q_values = model.predict(state.reshape(1, -1), verbose=0)
@@ -229,9 +229,9 @@ for episode in range(num_episodes):
 
     
 
-        _save(1)
-    # print("Pretrain Done")
-    # time.sleep(1000)
+    _save(1)
+    rounds = 0
+    total_reward = 0
 
     randomness = False
 

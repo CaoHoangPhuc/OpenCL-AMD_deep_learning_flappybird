@@ -55,18 +55,20 @@ class RouletteEnvironment:
         if ine is not None:
             outcome = ine
         else:
-            try:
-                while not new_data:
-                    # Your main thread's tasks here
-                    time.sleep(1)  # Sleep for 1 second or perform other tasks
-                    
-                outcome = previous_data['data']['result']['outcome']['number']
-                new_data = False
-            except KeyboardInterrupt:
-                outcome = int(input("Predict is {}, input is: ".format(action)))
-            # Simulate the roulette wheel
-            # outcome = np.random.randint(0, 36)
-            # outcome = (self.num*3 + 1 ) %37
+            if pre_train:
+                # Simulate the roulette wheel
+                outcome = np.random.randint(0, 36)
+                outcome = (self.num*3 + 1 ) %37
+            else:
+                try:
+                    while not new_data:
+                        # Your main thread's tasks here
+                        time.sleep(1)  # Sleep for 1 second or perform other tasks
+                        
+                    outcome = previous_data['data']['result']['outcome']['number']
+                    new_data = False
+                except KeyboardInterrupt:
+                    outcome = int(input("Predict is {}, input is: ".format(action)))
 
         self.num = outcome
         if action == 6:
@@ -90,7 +92,7 @@ class RouletteEnvironment:
 # Double Q-Learning Agent
 class DoubleQLearningAgent:
     
-    EXPLORE = 1000
+    EXPLORE = 9000
     INIT_EP = 0.9999
     FINL_EP = 0.0001
 
@@ -157,11 +159,11 @@ class DoubleQLearningAgent:
             return [-1, 1, -2, 2, -3, 3, -0.1]
         
     def choose_action(self, state):
-        # if self.epsilon > self.FINL_EP:
-        #     self.epsilon -= (self.INIT_EP - self.FINL_EP)/self.EXPLORE
+        if self.epsilon > self.FINL_EP:
+            self.epsilon -= (self.INIT_EP - self.FINL_EP)/self.EXPLORE
 
-        # if random.random() < self.epsilon:
-        #     return random.randint(0, self.num_actions-1), self.q_table(state), self.q_table_q(state)
+        if random.random() < self.epsilon:
+            return random.randint(0, self.num_actions-1), self.q_table(state), self.q_table_q(state)
         
         q_values = self.q_table(state)
         q_values_q = self.q_table_q(state)
@@ -213,52 +215,45 @@ def train_agent(agent, env, num_episodes):
     global pre_train
     for episode in range(num_episodes):
         total_reward = 0
-        done = False
         rounds = 0
+        pre_train = True
+        if pre_train:
+            for i in range(10000):
+                rounds +=1
+                (action, q1, q2) = agent.choose_action(state)
+                print("Sample Round: {}, predict: {}, amount: {}".format(
+                    rounds, 
+                    "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
+                    "0" if action == 6 else str(action // 2 + 1)))
+                next_state, reward = env.step(action)
+                agent.save_mem(state, q1, q2,reward,next_state)
+                if action != 6: total_reward += reward
+                print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
+                # print(np.round(q1[0],2))
+                # print(np.round(q2[0],2))
+                # agent.update(state, action, next_state, reward)
+                state = next_state
+            
+        agent._save(1)
         pre_train = False
-        while not done:
-            total_reward = 0
-            done = False
-            out = []
-            with open("data_log.txt", "r") as file:
-                for line in file:
-                    out.append(int(line))
-            if pre_train:
-                for i in out:
-                    rounds +=1
-                    (action, q1, q2) = agent.choose_action(state)
-                    print("Sample Round: {}, predict: {}, amount: {}".format(
-                        rounds, 
-                        "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
-                        "0" if action == 6 else str(action // 2 + 1)))
-                    next_state, reward = env.step(action, i)
-                    agent.save_mem(state, q1, q2,reward,next_state)
-                    if action != 6: total_reward += reward
-                    print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
-                    # print(np.round(q1[0],2))
-                    # print(np.round(q2[0],2))
-                    # agent.update(state, action, next_state, reward)
-                    state = next_state
-                    agent._save(1)
-            else:
-                for i in range(5000):
-                    rounds +=1
-                    (action, q1, q2) = agent.choose_action(state)
-                    print("Sample Round: {}, predict: {}, amount: {}".format(
-                        rounds, 
-                        "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
-                        "0" if action == 6 else str(action // 2 + 1)))
-                    next_state, reward = env.step(action)
-                    agent.save_mem(state, q1, q2,reward,next_state)
-                    if action != 6: total_reward += reward
-                    print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
-                    # print(np.round(q1[0],2))
-                    # print(np.round(q2[0],2))
-                    # agent.update(state, action, next_state, reward)
-                    state = next_state
-                    agent._save(1)
-
-            pre_train = False
+        rounds = 0
+        total_reward = 0
+        while True:
+            rounds +=1
+            (action, q1, q2) = agent.choose_action(state)
+            print("Sample Round: {}, predict: {}, amount: {}".format(
+                rounds, 
+                "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
+                "0" if action == 6 else str(action // 2 + 1)))
+            next_state, reward = env.step(action)
+            agent.save_mem(state, q1, q2,reward,next_state)
+            if action != 6: total_reward += reward
+            print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
+            # print(np.round(q1[0],2))
+            # print(np.round(q2[0],2))
+            # agent.update(state, action, next_state, reward)
+            state = next_state
+            agent._save(1)
 
         print(f"Episode {episode + 1}, Total Reward: {total_reward}")
 
