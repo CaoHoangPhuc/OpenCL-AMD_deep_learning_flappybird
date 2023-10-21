@@ -83,6 +83,15 @@ def save_mem(obs,act,rwd,n_o):
     Mem.append((obs,np.argmax(act),rwd,deepcopy(n_o)))
     if len(Mem) > batch: replay()
 
+def check_result(outcome):
+    if outcome == 0:
+        return [-1, -1, -2, -2, -3, -3, -0.1]
+    elif outcome %2 == 0:
+        return [1, -1, 2, -2, 3, -3, -0.1]
+    elif outcome %2 == 1:
+        return [-1, 1, -2, 2, -3, 3, -0.1]
+    
+
 def replay():
     mini_batch = random.sample(Mem, batch)
     S  = np.array([d[0] for d in mini_batch])
@@ -180,7 +189,7 @@ state = deepcopy(env.state)
 # Start the data fetching thread
 data_fetch_thread.start()
 
-_load(1)
+# _load(1)
 for episode in range(num_episodes):
     rounds = 0
     total_reward = 0
@@ -208,8 +217,8 @@ for episode in range(num_episodes):
         if action != 6:
             total_reward += reward
         print("Sample Round: {}, predict: {}, outcome:{}, profit: {}".format(rounds, action, next_state[-1], total_reward))
-        if rounds > num_outcomes:
-            save_mem(state,q_values,reward,next_state)
+        # if rounds > num_outcomes:
+        save_mem(state,q_values,reward,next_state)
 
         state = deepcopy(next_state)
 
@@ -218,7 +227,11 @@ for episode in range(num_episodes):
         q_values[0, action] = target
         model.fit(state.reshape(1, -1), q_values, epochs=1, verbose=0)
 
+    
+
         _save(1)
+    # print("Pretrain Done")
+    # time.sleep(1000)
 
     randomness = False
 

@@ -104,7 +104,7 @@ class DoubleQLearningAgent:
         # self.q2_table = [[0.0 for _ in range(num_actions)] for _ in range(num_states)]
 
         self.Mem = deque()
-        self.MaxMem = 500
+        self.MaxMem = 5000
         self.batch = 32
 
         RAN = keras.initializers.RandomNormal(mean=0.0, stddev=.01, seed=None)
@@ -209,7 +209,7 @@ class DoubleQLearningAgent:
 data_fetch_thread.start()
 def train_agent(agent, env, num_episodes):
     state = deepcopy(env.state)
-    agent._load(1)
+    # agent._load(1)
     global pre_train
     for episode in range(num_episodes):
         total_reward = 0
@@ -217,48 +217,46 @@ def train_agent(agent, env, num_episodes):
         rounds = 0
         pre_train = False
         while not done:
-            # total_reward = 0
-            # done = False
-            # out = []
-            # with open("data_log.txt", "r") as file:
-            #     for line in file:
-            #         out.append(int(line))
-            # if pre_train:
-            #     for i in out:
-            #         rounds +=1
-            #         (action, q1, q2) = agent.choose_action(state)
-            #         print("Sample Round: {}, predict: {}, amount: {}".format(
-            #             rounds, 
-            #             "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
-            #             "0" if action == 6 else str(action // 2 + 1)))
-            #         next_state, reward = env.step(action, i)
-            #         agent.save_mem(state, q1, q2,reward,next_state)
-            #         if action != 6: total_reward += reward
-            #         print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
-            #         # print(np.round(q1[0],2))
-            #         # print(np.round(q2[0],2))
-            #         # agent.update(state, action, next_state, reward)
-            #         state = next_state
-            #         if rounds % 500 == 0:
-            #             agent._save(1)
-            # else:
-            
-            rounds +=1
-            (action, q1, q2) = agent.choose_action(state)
-            print("Sample Round: {}, predict: {}, amount: {}".format(
-                rounds, 
-                "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
-                "0" if action == 6 else str(action // 2 + 1)))
-            next_state, reward = env.step(action)
-            if rounds > roulette_env.num_states:
-                agent.save_mem(state, q1, q2,reward,next_state)
-            if action != 6: total_reward += reward
-            print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
-            # print(np.round(q1[0],2))
-            # print(np.round(q2[0],2))
-            # agent.update(state, action, next_state, reward)
-            state = next_state
-            agent._save(1)
+            total_reward = 0
+            done = False
+            out = []
+            with open("data_log.txt", "r") as file:
+                for line in file:
+                    out.append(int(line))
+            if pre_train:
+                for i in out:
+                    rounds +=1
+                    (action, q1, q2) = agent.choose_action(state)
+                    print("Sample Round: {}, predict: {}, amount: {}".format(
+                        rounds, 
+                        "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
+                        "0" if action == 6 else str(action // 2 + 1)))
+                    next_state, reward = env.step(action, i)
+                    agent.save_mem(state, q1, q2,reward,next_state)
+                    if action != 6: total_reward += reward
+                    print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
+                    # print(np.round(q1[0],2))
+                    # print(np.round(q2[0],2))
+                    # agent.update(state, action, next_state, reward)
+                    state = next_state
+                    agent._save(1)
+            else:
+                for i in range(5000):
+                    rounds +=1
+                    (action, q1, q2) = agent.choose_action(state)
+                    print("Sample Round: {}, predict: {}, amount: {}".format(
+                        rounds, 
+                        "NOBET" if action == 6 else "EVEN" if action%2==0 else "ODD", 
+                        "0" if action == 6 else str(action // 2 + 1)))
+                    next_state, reward = env.step(action)
+                    agent.save_mem(state, q1, q2,reward,next_state)
+                    if action != 6: total_reward += reward
+                    print("outcome:{}, profit: {}".format(next_state[-1], total_reward))
+                    # print(np.round(q1[0],2))
+                    # print(np.round(q2[0],2))
+                    # agent.update(state, action, next_state, reward)
+                    state = next_state
+                    agent._save(1)
 
             pre_train = False
 
