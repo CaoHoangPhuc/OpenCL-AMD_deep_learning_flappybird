@@ -94,6 +94,8 @@ def check_result(outcome):
 
 def replay():
     mini_batch = random.sample(Mem, batch)
+    mini_batch.append(Mem[-1])
+
     S  = np.array([d[0] for d in mini_batch])
     S1 = np.array([d[3] for d in mini_batch])
 
@@ -222,11 +224,6 @@ for episode in range(num_episodes):
 
         state = deepcopy(next_state)
 
-        # Update the Q-network based on the Q-learning update rule
-        target = reward + 0.9*np.max(model.predict(next_state.reshape(1, -1), verbose=0))
-        q_values[0, action] = target
-        model.fit(state.reshape(1, -1), q_values, epochs=1, verbose=0)
-
     
 
     _save(1)
@@ -252,9 +249,6 @@ for episode in range(num_episodes):
         # Update the Q-network based on the Q-learning update rule
         if len(Mem) > batch:
             replay()
-        target = reward + 0.9*np.max(model.predict(next_state.reshape(1, -1), verbose=0))
-        q_values[0, action] = target
-        model.fit(state.reshape(1, -1), q_values, epochs=1, verbose=0)
 
     # randomness = False
     # print("Sample Round: {}, predict: {}, outcome:{}, profit: {}".format(rounds, action, next_state[-1], total_reward))

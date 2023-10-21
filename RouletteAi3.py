@@ -187,6 +187,7 @@ class DoubleQLearningAgent:
 
     def replay(self):
         mini_batch = random.sample(self.Mem, self.batch)
+        mini_batch.append(self.Mem[-1])
         
         S  = np.array([d[0] for d in mini_batch])
         S1 = np.array([d[4] for d in mini_batch])
