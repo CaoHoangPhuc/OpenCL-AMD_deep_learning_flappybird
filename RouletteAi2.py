@@ -57,9 +57,9 @@ MaxMem = 5000
 batch = 32
 # Create a simple Q-network
 model = keras.Sequential([
-    keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), input_shape=(num_outcomes,), name='input_layer'),
-    keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), name='hidden_layer'),
-    keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), name='hidden_layer2'),
+    keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), input_shape=(num_outcomes,), name='input_layer'),
+    keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), name='hidden_layer'),
+    keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), name='hidden_layer2'),
     keras.layers.Dense(7, activation='linear', name='output_layer')
 ])
 

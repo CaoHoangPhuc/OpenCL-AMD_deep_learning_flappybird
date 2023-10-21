@@ -112,15 +112,15 @@ class DoubleQLearningAgent:
         RAN = keras.initializers.RandomNormal(mean=0.0, stddev=.01, seed=None)
         # Create a simple Q-network
         self.model = keras.Sequential([
-            keras.layers.Dense(16, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), input_shape=(self.num_states,), name='input_layer'),
-            keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), name='hidden_layer'),
-            keras.layers.Dense(72, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), name='hidden_layer2'),
+            keras.layers.Dense(16, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), input_shape=(self.num_states,), name='input_layer'),
+            keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), name='hidden_layer'),
+            keras.layers.Dense(72, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), name='hidden_layer2'),
             keras.layers.Dense(7, activation='linear', name='output_layer')
         ])
         self.model_q = keras.Sequential([
-            keras.layers.Dense(72, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), input_shape=(self.num_states,), name='input_layer'),
-            keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), name='hidden_layer'),
-            keras.layers.Dense(16, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.1), name='hidden_layer2'),
+            keras.layers.Dense(72, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), input_shape=(self.num_states,), name='input_layer'),
+            keras.layers.Dense(36, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), name='hidden_layer'),
+            keras.layers.Dense(16, use_bias=True, kernel_initializer=RAN, bias_initializer=RAN, activation=LeakyReLU(alpha=0.001), name='hidden_layer2'),
             keras.layers.Dense(7, activation='linear', name='output_layer')
         ])
         
@@ -211,7 +211,7 @@ class DoubleQLearningAgent:
 data_fetch_thread.start()
 def train_agent(agent, env, num_episodes):
     state = deepcopy(env.state)
-    # agent._load(1)
+    agent._load(1)
     global pre_train
     for episode in range(num_episodes):
         total_reward = 0
