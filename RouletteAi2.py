@@ -189,7 +189,7 @@ state = deepcopy(env.state)
 # Start the data fetching thread
 data_fetch_thread.start()
 
-# _load(1)
+_load(1)
 for episode in range(num_episodes):
     rounds = 0
     total_reward = 0
