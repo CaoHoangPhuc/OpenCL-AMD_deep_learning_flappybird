@@ -58,7 +58,7 @@ class RouletteEnvironment:
             if pre_train:
                 # Simulate the roulette wheel
                 outcome = np.random.randint(0, 36)
-                outcome = (self.num*3 + 1 ) %37
+                # outcome = (self.num*3 + 1 ) %37
             else:
                 try:
                     while not new_data:
