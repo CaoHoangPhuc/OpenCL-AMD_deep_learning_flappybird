@@ -235,12 +235,12 @@ for episode in range(num_episodes):
 
     randomness = False
 
-    for i in deepcopy(out):
+    while True:
         rounds += 1
         # print(round, step, total_reward)
         q_values = model.predict(state.reshape(1, -1), verbose=0)
         action = np.argmax(q_values)
-        next_state, reward, _ = env.step(action, i)
+        next_state, reward, _ = env.step(action)
         if action != 6:
             total_reward += reward
         print("Sample Round: {}, predict: {}, outcome:{}, profit: {}".format(rounds, action, next_state[-1], total_reward))
