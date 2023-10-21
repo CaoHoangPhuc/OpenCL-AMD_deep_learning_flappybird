@@ -259,7 +259,7 @@ for episode in range(num_episodes):
     # randomness = False
     # print("Sample Round: {}, predict: {}, outcome:{}, profit: {}".format(rounds, action, next_state[-1], total_reward))
     # print(f"Episode {episode + 1} - Total Reward: {total_reward}")
-    _save(1)
+        _save(1)
     # else: print("No save")
 
 # To predict the next outcome given the current state
